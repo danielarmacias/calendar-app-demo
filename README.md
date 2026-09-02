@@ -1,49 +1,41 @@
 # Calendar App
 
-A simple, dependency-free month-view calendar. Add, edit, and delete events, all stored locally in your browser via `localStorage`. No build step, no framework — just open `index.html`.
+A simple month-view calendar where you can add, edit, and delete events, right in your browser — no installation needed.
+
+## Setup Instructions
+
+This app has no build tools or dependencies — it's just plain HTML, CSS, and JavaScript.
+
+1. Get the files onto your computer:
+   ```bash
+   git clone https://github.com/danielarmacias/calendar-app-demo.git
+   cd calendar-app-demo
+   ```
+   (Or just download/copy the `index.html`, `app.js`, and `styles.css` files.)
+2. Open `index.html` in your web browser — double-click the file, or drag it into a browser window.
+3. That's it! The app is running. Your events are saved in the browser's local storage, so they'll still be there next time you open the page (in the same browser).
 
 ## Features
 
-- **Month grid view** with previous/next navigation and a "Today" shortcut
-- **Week numbers**: an ISO week number column on the left of the grid
-- **Themed monthly backgrounds**: a soft, floral gradient background tied to a notable day of each month (e.g. 🌷 Mother's Day in May, 🎄 Christmas in December), changing automatically as you navigate months
-- **Add / edit / delete events** through a modal (title, date, optional time, optional description)
-- **Persistence** via `localStorage` (events survive page reloads)
-- **Validation**: title and date are required, with inline error messages
-- **Responsive UI**: adapts down to mobile widths with no horizontal overflow
+- **Month view** with buttons to go to the previous/next month, and a "Today" button to jump back to the current date
+- **Week numbers** shown on the left side of the calendar grid
+- **A themed background each month**, with an emoji and label for a notable day (e.g. 💘 Valentine's Day in February, 🎄 Christmas in December)
+- **Add, edit, and delete events** using a simple popup form
+- **Events are saved automatically** in your browser, so they're still there when you reload the page
+- **Form validation** — you'll see an inline message if you try to save an event without a title or date
+- **Works on mobile** — the layout adjusts to smaller screens
 
-## Screenshots
+## Example Usage
 
-### Month view
-![Month view](screenshots/month-view-desktop.png)
+**Adding an event:**
+1. Click any day on the calendar (or the "+ Add Event" button).
+2. Fill in a title (required) and a date (required). Time and description are optional.
+3. Click "Save". Your event now shows up on that day.
 
-### Monthly themed backgrounds
-| May — Mother's Day | December — Christmas |
-| --- | --- |
-| ![Mayo](screenshots/theme-mayo-dia-madres.png) | ![Diciembre](screenshots/theme-diciembre-navidad.png) |
+**Editing or deleting an event:**
+1. Click on an existing event in the calendar.
+2. Update the details and click "Save" — or click "Delete" to remove it.
 
-### Add event modal
-![Add event modal](screenshots/add-event-modal.png)
-
-### Mobile responsive view
-![Mobile view](screenshots/month-view-mobile.png)
-
-## Usage
-
-Clone the repo and open `index.html` directly in a browser:
-
-```bash
-git clone https://github.com/danielarmacias/calendar-app-demo.git
-cd calendar-app-demo
-open index.html   # or double-click the file
-```
-
-Click a day (or "+ Add Event") to create an event, click an existing event to edit or delete it.
-
-## Project structure
-
-```
-index.html   Page markup (grid container, modal)
-styles.css   Responsive grid and modal styling
-app.js       Rendering, localStorage persistence, modal/form logic
-```
+**Navigating months:**
+- Use the `‹` and `›` arrows to move between months.
+- Click "Today" to jump back to the current month.
