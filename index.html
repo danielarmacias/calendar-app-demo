@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="toolbar">
+      <div class="toolbar-left">
+        <button id="prevBtn" class="icon-btn" aria-label="Previous month">&#8249;</button>
+        <h1 id="monthLabel" class="month-label"></h1>
+        <button id="nextBtn" class="icon-btn" aria-label="Next month">&#8250;</button>
+      </div>
+      <div class="toolbar-right">
+        <button id="todayBtn" class="btn">Today</button>
+        <button id="addEventBtn" class="btn btn-primary">+ Add Event</button>
+      </div>
+    </header>
+
+    <div class="weekdays" id="weekdays"></div>
+    <div class="grid" id="calendarGrid"></div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add Event</h2>
+        <button id="closeModalBtn" class="icon-btn" aria-label="Close">&times;</button>
+      </div>
+      <form id="eventForm" novalidate>
+        <input type="hidden" id="eventId">
+
+        <label class="field">
+          <span>Title <span class="required">*</span></span>
+          <input type="text" id="eventTitle" maxlength="100" placeholder="Event title">
+          <span class="error-msg" id="titleError"></span>
+        </label>
+
+        <label class="field">
+          <span>Date <span class="required">*</span></span>
+          <input type="date" id="eventDate">
+          <span class="error-msg" id="dateError"></span>
+        </label>
+
+        <label class="field">
+          <span>Time</span>
+          <input type="time" id="eventTime">
+        </label>
+
+        <label class="field">
+          <span>Description</span>
+          <textarea id="eventDescription" rows="3" maxlength="500" placeholder="Optional details"></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" id="deleteEventBtn" class="btn btn-danger" hidden>Delete</button>
+          <div class="modal-actions-right">
+            <button type="button" id="cancelBtn" class="btn">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
