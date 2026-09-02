@@ -4,6 +4,23 @@
   const STORAGE_KEY = "calendar-events";
   const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+  // One theme per month: a special/notable day plus an emoji + gradient
+  // (defined in styles.css as .theme-0 .. .theme-11) used as the page background.
+  const MONTH_THEMES = [
+    { label: "Año Nuevo", emoji: "🎉" },
+    { label: "Día de San Valentín", emoji: "💘" },
+    { label: "Día Internacional de la Mujer", emoji: "🌸" },
+    { label: "Día de la Tierra", emoji: "🌿" },
+    { label: "Día de las Madres", emoji: "🌷" },
+    { label: "Día del Padre", emoji: "⭐" },
+    { label: "Vacaciones de Verano", emoji: "☀️" },
+    { label: "Día de la Amistad", emoji: "🎈" },
+    { label: "Amor y Amistad", emoji: "💌" },
+    { label: "Halloween", emoji: "🎃" },
+    { label: "Día de Acción de Gracias", emoji: "🍂" },
+    { label: "Navidad", emoji: "🎄" },
+  ];
+
   const state = {
     viewYear: new Date().getFullYear(),
     viewMonth: new Date().getMonth(), // 0-11
@@ -60,9 +77,20 @@
     return formatDateKey(now.getFullYear(), now.getMonth(), now.getDate());
   }
 
+  function getISOWeek(date) {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    const dayNum = (d.getUTCDay() + 6) % 7; // Mon = 0 .. Sun = 6
+    d.setUTCDate(d.getUTCDate() - dayNum + 3); // nearest Thursday
+    const firstThursday = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+    const firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
+    firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3);
+    return 1 + Math.round((d - firstThursday) / (7 * 24 * 3600 * 1000));
+  }
+
   // ---------- DOM refs ----------
 
   const monthLabel = document.getElementById("monthLabel");
+  const specialDayEl = document.getElementById("specialDay");
   const weekdaysEl = document.getElementById("weekdays");
   const gridEl = document.getElementById("calendarGrid");
   const prevBtn = document.getElementById("prevBtn");
@@ -88,6 +116,10 @@
 
   function renderWeekdays() {
     weekdaysEl.innerHTML = "";
+    const weekLabel = document.createElement("div");
+    weekLabel.className = "week-col-label";
+    weekLabel.textContent = "Sem";
+    weekdaysEl.appendChild(weekLabel);
     WEEKDAY_LABELS.forEach((label) => {
       const div = document.createElement("div");
       div.textContent = label;
@@ -95,8 +127,49 @@
     });
   }
 
+  function applyMonthTheme(viewMonth) {
+    const theme = MONTH_THEMES[viewMonth];
+    document.body.className = `theme-${viewMonth}`;
+    document.body.dataset.emoji = theme.emoji;
+    specialDayEl.textContent = `${theme.emoji} ${theme.label}`;
+  }
+
+  function createDayCell({ year, month, day, outside }, eventsByDate, today) {
+    const dateKey = formatDateKey(year, month, day);
+    const cell = document.createElement("div");
+    cell.className = "day-cell" + (outside ? " outside" : "") + (dateKey === today ? " today" : "");
+    cell.dataset.date = dateKey;
+
+    const numberEl = document.createElement("div");
+    numberEl.className = "day-number";
+    numberEl.textContent = String(day);
+    cell.appendChild(numberEl);
+
+    const eventsWrap = document.createElement("div");
+    eventsWrap.className = "day-events";
+    (eventsByDate[dateKey] || []).forEach((evt) => {
+      const chip = document.createElement("div");
+      chip.className = "event-chip";
+      chip.textContent = evt.time ? `${evt.time} ${evt.title}` : evt.title;
+      chip.title = evt.title;
+      chip.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openModal({ mode: "edit", event: evt });
+      });
+      eventsWrap.appendChild(chip);
+    });
+    cell.appendChild(eventsWrap);
+
+    cell.addEventListener("click", () => {
+      openModal({ mode: "add", date: dateKey });
+    });
+
+    return cell;
+  }
+
   function renderCalendar() {
     const { viewYear, viewMonth } = state;
+    applyMonthTheme(viewMonth);
     monthLabel.textContent = new Date(viewYear, viewMonth, 1).toLocaleDateString(
       undefined,
       { month: "long", year: "numeric" }
@@ -153,38 +226,20 @@
     gridEl.innerHTML = "";
     const today = todayKey();
 
-    cells.forEach(({ year, month, day, outside }) => {
-      const dateKey = formatDateKey(year, month, day);
-      const cell = document.createElement("div");
-      cell.className = "day-cell" + (outside ? " outside" : "") + (dateKey === today ? " today" : "");
-      cell.dataset.date = dateKey;
+    for (let w = 0; w < cells.length / 7; w++) {
+      const weekCells = cells.slice(w * 7, w * 7 + 7);
+      const firstDay = weekCells[0];
+      const weekNumber = getISOWeek(new Date(firstDay.year, firstDay.month, firstDay.day));
 
-      const numberEl = document.createElement("div");
-      numberEl.className = "day-number";
-      numberEl.textContent = String(day);
-      cell.appendChild(numberEl);
+      const weekNumEl = document.createElement("div");
+      weekNumEl.className = "week-number";
+      weekNumEl.textContent = String(weekNumber);
+      gridEl.appendChild(weekNumEl);
 
-      const eventsWrap = document.createElement("div");
-      eventsWrap.className = "day-events";
-      (eventsByDate[dateKey] || []).forEach((evt) => {
-        const chip = document.createElement("div");
-        chip.className = "event-chip";
-        chip.textContent = evt.time ? `${evt.time} ${evt.title}` : evt.title;
-        chip.title = evt.title;
-        chip.addEventListener("click", (e) => {
-          e.stopPropagation();
-          openModal({ mode: "edit", event: evt });
-        });
-        eventsWrap.appendChild(chip);
+      weekCells.forEach((cellInfo) => {
+        gridEl.appendChild(createDayCell(cellInfo, eventsByDate, today));
       });
-      cell.appendChild(eventsWrap);
-
-      cell.addEventListener("click", () => {
-        openModal({ mode: "add", date: dateKey });
-      });
-
-      gridEl.appendChild(cell);
-    });
+    }
   }
 
   // ---------- modal ----------

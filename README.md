@@ -5,6 +5,8 @@ A simple, dependency-free month-view calendar. Add, edit, and delete events, all
 ## Features
 
 - **Month grid view** with previous/next navigation and a "Today" shortcut
+- **Week numbers**: an ISO week number column on the left of the grid
+- **Themed monthly backgrounds**: a soft, floral gradient background tied to a notable day of each month (e.g. 🌷 Mother's Day in May, 🎄 Christmas in December), changing automatically as you navigate months
 - **Add / edit / delete events** through a modal (title, date, optional time, optional description)
 - **Persistence** via `localStorage` (events survive page reloads)
 - **Validation**: title and date are required, with inline error messages
@@ -14,6 +16,11 @@ A simple, dependency-free month-view calendar. Add, edit, and delete events, all
 
 ### Month view
 ![Month view](screenshots/month-view-desktop.png)
+
+### Monthly themed backgrounds
+| May — Mother's Day | December — Christmas |
+| --- | --- |
+| ![Mayo](screenshots/theme-mayo-dia-madres.png) | ![Diciembre](screenshots/theme-diciembre-navidad.png) |
 
 ### Add event modal
 ![Add event modal](screenshots/add-event-modal.png)

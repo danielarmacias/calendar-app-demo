@@ -17,6 +17,10 @@
 - [x] Responsive/manual test pass across desktop and narrow mobile widths
   - Acceptance: no horizontal overflow, modal usable on small screens, all interactions work via touch/click
 - [x] Write review section summarizing changes
+- [x] Add ISO week number column to the left of the grid
+  - Acceptance: each week row shows the correct ISO week number; column stays aligned and readable on mobile
+- [x] Add a themed, floral background per month tied to a notable day (e.g. Mother's Day in May)
+  - Acceptance: background gradient/emoji watermark and the special-day label change automatically on month navigation; text stays legible over every theme
 
 ## Review
 
@@ -42,3 +46,6 @@ Drove the app end-to-end with Playwright (headless Chromium) against the real `i
 The modal overlay used `display: flex` in CSS while relying on the HTML `hidden` attribute to hide it. Browser default styles apply `[hidden] { display: none }`, but that UA-stylesheet rule is overridden by author stylesheets regardless of selector specificity — so the modal was actually visible and intercepting clicks even when marked `hidden`. Fixed by adding an explicit `.modal-overlay[hidden] { display: none; }` rule in `styles.css`.
 
 No other issues found; all planned features work as expected.
+
+**Follow-up: week numbers + monthly themes**
+Added a `.week-number` column (ISO 8601 week number, computed per row from the row's first date) to the left of the grid and weekday header. Added twelve month themes (`app.js` `MONTH_THEMES` + `styles.css` `.theme-0`..`.theme-11`): a soft pastel gradient, an accent color (used for the "today" marker, primary button, and event chips via the `--accent` CSS variable), and an emoji watermark tied to a notable day of that month (New Year, Valentine's Day, International Women's Day, Earth Day, Mother's Day, Father's Day, Summer break, Friendship Day, Amor y Amistad, Halloween, Thanksgiving, Christmas). A shared delicate floral SVG pattern is layered under the gradient for a consistent soft aesthetic across all months, and `.app` sits as a semi-transparent card on top so grid content stays legible. Verified via Playwright that navigating months swaps the theme and special-day label correctly, and that the layout still holds up on a 375px viewport.
