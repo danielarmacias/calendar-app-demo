@@ -3,9 +3,13 @@
 
   const STORAGE_KEY = "calendar-events";
   const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const BODY_BASE_CLASSES = "relative min-h-screen overflow-x-hidden bg-[#fdf6f0] font-sans text-[#222]";
+  const WEEKDAY_LABEL_CLASSES = "px-0 py-1 text-center text-[0.7rem] font-semibold text-muted sm:text-[0.8rem]";
+  const WEEK_COL_LABEL_CLASSES = "px-0 py-1 text-center text-[0.7rem] font-semibold text-muted sm:text-[0.8rem] !text-[0.62rem] !text-accent sm:!text-[0.7rem]";
+  const WEEK_NUMBER_CLASSES = "flex items-center justify-center rounded-lg bg-white/50 text-[0.62rem] font-semibold text-accent sm:text-[0.75rem]";
 
   // One theme per month: a special/notable day plus an emoji + gradient
-  // (defined in styles.css as .theme-0 .. .theme-11) used as the page background.
+  // (defined in index.html as .theme-0 .. .theme-11) used as the page background.
   const MONTH_THEMES = [
     { label: "Año Nuevo", emoji: "🎉" },
     { label: "Día de San Valentín", emoji: "💘" },
@@ -117,11 +121,12 @@
   function renderWeekdays() {
     weekdaysEl.innerHTML = "";
     const weekLabel = document.createElement("div");
-    weekLabel.className = "week-col-label";
+    weekLabel.className = WEEK_COL_LABEL_CLASSES;
     weekLabel.textContent = "Sem";
     weekdaysEl.appendChild(weekLabel);
     WEEKDAY_LABELS.forEach((label) => {
       const div = document.createElement("div");
+      div.className = WEEKDAY_LABEL_CLASSES;
       div.textContent = label;
       weekdaysEl.appendChild(div);
     });
@@ -129,27 +134,33 @@
 
   function applyMonthTheme(viewMonth) {
     const theme = MONTH_THEMES[viewMonth];
-    document.body.className = `theme-${viewMonth}`;
+    document.body.className = `${BODY_BASE_CLASSES} theme-${viewMonth}`;
     document.body.dataset.emoji = theme.emoji;
     specialDayEl.textContent = `${theme.emoji} ${theme.label}`;
   }
 
   function createDayCell({ year, month, day, outside }, eventsByDate, today) {
     const dateKey = formatDateKey(year, month, day);
+    const isToday = dateKey === today;
     const cell = document.createElement("div");
-    cell.className = "day-cell" + (outside ? " outside" : "") + (dateKey === today ? " today" : "");
+    cell.className =
+      "flex min-w-0 flex-col gap-1 cursor-pointer rounded-md border border-border p-1 hover:bg-white sm:rounded-lg sm:p-1.5" +
+      (outside ? " bg-white/35 text-muted" : " bg-white/75");
     cell.dataset.date = dateKey;
 
     const numberEl = document.createElement("div");
-    numberEl.className = "day-number";
+    numberEl.className =
+      "flex h-[22px] w-[22px] items-center justify-center text-[0.85rem]" +
+      (isToday ? " rounded-full bg-accent text-white" : "");
     numberEl.textContent = String(day);
     cell.appendChild(numberEl);
 
     const eventsWrap = document.createElement("div");
-    eventsWrap.className = "day-events";
+    eventsWrap.className = "flex flex-col gap-0.5 overflow-hidden max-[420px]:[&>*:nth-child(n+3)]:hidden";
     (eventsByDate[dateKey] || []).forEach((evt) => {
       const chip = document.createElement("div");
-      chip.className = "event-chip";
+      chip.className =
+        "truncate rounded bg-accent px-1 py-0.5 text-[0.65rem] text-white hover:brightness-90 sm:px-1.5 sm:py-0.5 sm:text-[0.72rem]";
       chip.textContent = evt.time ? `${evt.time} ${evt.title}` : evt.title;
       chip.title = evt.title;
       chip.addEventListener("click", (e) => {
@@ -232,7 +243,7 @@
       const weekNumber = getISOWeek(new Date(firstDay.year, firstDay.month, firstDay.day));
 
       const weekNumEl = document.createElement("div");
-      weekNumEl.className = "week-number";
+      weekNumEl.className = WEEK_NUMBER_CLASSES;
       weekNumEl.textContent = String(weekNumber);
       gridEl.appendChild(weekNumEl);
 

@@ -4,64 +4,122 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calendar</title>
-<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+  @theme {
+    --color-border: #e0e0e0;
+    --color-danger: #e5484d;
+    --color-muted: #999999;
+    --color-bg-muted: #f7f7f8;
+    --color-accent: #3b6df5;
+  }
+
+  :root {
+    --floral-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cg fill='white' fill-opacity='0.55'%3E%3Ccircle cx='20' cy='20' r='3'/%3E%3Ccircle cx='27' cy='15' r='3'/%3E%3Ccircle cx='13' cy='15' r='3'/%3E%3Ccircle cx='20' cy='10' r='3'/%3E%3Ccircle cx='20' cy='20' r='2' fill-opacity='0.85'/%3E%3Cpath d='M66 62c4-8 12-8 12 0-4 8-12 8-12 0z'/%3E%3Ccircle cx='92' cy='92' r='2.5'/%3E%3Ccircle cx='98' cy='87' r='2.5'/%3E%3Ccircle cx='86' cy='87' r='2.5'/%3E%3Ccircle cx='92' cy='83' r='2.5'/%3E%3Ccircle cx='92' cy='92' r='1.6' fill-opacity='0.85'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  body {
+    background-image: var(--floral-pattern), var(--month-gradient, linear-gradient(135deg, #fdf6f0, #fdf6f0));
+    background-size: 140px 140px, cover;
+    background-attachment: fixed;
+    background-repeat: repeat, no-repeat;
+    transition: background-image 0.5s ease;
+  }
+
+  body::after {
+    content: attr(data-emoji);
+    position: fixed;
+    right: -30px;
+    bottom: -40px;
+    font-size: 220px;
+    line-height: 1;
+    opacity: 0.16;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  /* Month themes: pastel gradient + accent color per month */
+  body.theme-0 { --month-gradient: linear-gradient(135deg, #fff8e6, #e8e6ff); --color-accent: #8a6dd8; }
+  body.theme-1 { --month-gradient: linear-gradient(135deg, #ffe8ef, #ffd7e0); --color-accent: #e0517a; }
+  body.theme-2 { --month-gradient: linear-gradient(135deg, #f3e8ff, #ffe6f2); --color-accent: #9b59d0; }
+  body.theme-3 { --month-gradient: linear-gradient(135deg, #e8f7ea, #eafff0); --color-accent: #4caf7d; }
+  body.theme-4 { --month-gradient: linear-gradient(135deg, #ffeef5, #fff0e6); --color-accent: #e8779c; }
+  body.theme-5 { --month-gradient: linear-gradient(135deg, #e8f0ff, #eef5ff); --color-accent: #3b6db5; }
+  body.theme-6 { --month-gradient: linear-gradient(135deg, #fff6e0, #ffedd1); --color-accent: #d99a1f; }
+  body.theme-7 { --month-gradient: linear-gradient(135deg, #e6fff5, #e6f7ff); --color-accent: #2ea0a0; }
+  body.theme-8 { --month-gradient: linear-gradient(135deg, #ffe9e0, #ffe0ea); --color-accent: #d9604a; }
+  body.theme-9 { --month-gradient: linear-gradient(135deg, #fff0e0, #f3e6ff); --color-accent: #c76a1f; }
+  body.theme-10 { --month-gradient: linear-gradient(135deg, #fbeee0, #f7e2d0); --color-accent: #a86428; }
+  body.theme-11 { --month-gradient: linear-gradient(135deg, #e8fff0, #ffe6e6); --color-accent: #c23b3b; }
+
+  @media (max-width: 600px) {
+    body::after {
+      font-size: 140px;
+    }
+  }
+</style>
 </head>
-<body>
-  <div class="app">
-    <header class="toolbar">
-      <div class="toolbar-left">
-        <button id="prevBtn" class="icon-btn" aria-label="Previous month">&#8249;</button>
-        <h1 id="monthLabel" class="month-label"></h1>
-        <button id="nextBtn" class="icon-btn" aria-label="Next month">&#8250;</button>
+<body class="relative min-h-screen overflow-x-hidden bg-[#fdf6f0] font-sans text-[#222]">
+  <div class="app relative z-10 mx-auto my-6 max-w-[1000px] rounded-[20px] bg-white/[0.82] p-5 shadow-[0_10px_34px_rgba(0,0,0,0.08)] backdrop-blur-md">
+    <header class="mb-4 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <button id="prevBtn" class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-border bg-transparent text-lg leading-none hover:bg-bg-muted" aria-label="Previous month">&#8249;</button>
+        <h1 id="monthLabel" class="m-0 min-w-0 text-center text-[1.1rem] sm:min-w-[180px] sm:text-[1.4rem]"></h1>
+        <button id="nextBtn" class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-border bg-transparent text-lg leading-none hover:bg-bg-muted" aria-label="Next month">&#8250;</button>
       </div>
-      <div class="toolbar-right">
-        <button id="todayBtn" class="btn">Today</button>
-        <button id="addEventBtn" class="btn btn-primary">+ Add Event</button>
+      <div class="flex items-center gap-2">
+        <button id="todayBtn" class="cursor-pointer rounded-md border border-border bg-white px-2.5 py-1.5 text-[0.8rem] hover:bg-bg-muted sm:px-3.5 sm:py-2 sm:text-[0.9rem]">Today</button>
+        <button id="addEventBtn" class="cursor-pointer rounded-md border border-accent bg-accent px-2.5 py-1.5 text-[0.8rem] text-white hover:brightness-95 sm:px-3.5 sm:py-2 sm:text-[0.9rem]">+ Add Event</button>
       </div>
     </header>
 
-    <p class="special-day" id="specialDay"></p>
+    <p class="-mt-2 mb-4 text-center text-[0.9rem] font-semibold text-accent" id="specialDay"></p>
 
-    <div class="weekdays" id="weekdays"></div>
-    <div class="grid" id="calendarGrid"></div>
+    <div class="mb-1.5 grid grid-cols-[26px_repeat(7,1fr)] gap-1 sm:grid-cols-[40px_repeat(7,1fr)] sm:gap-1.5" id="weekdays"></div>
+    <div class="grid grid-cols-[26px_repeat(7,1fr)] auto-rows-[minmax(64px,auto)] gap-1 sm:grid-cols-[40px_repeat(7,1fr)] sm:auto-rows-[minmax(90px,auto)] sm:gap-1.5" id="calendarGrid"></div>
   </div>
 
-  <div class="modal-overlay" id="modalOverlay" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modal-header">
-        <h2 id="modalTitle">Add Event</h2>
-        <button id="closeModalBtn" class="icon-btn" aria-label="Close">&times;</button>
+  <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/45 p-4" id="modalOverlay" hidden>
+    <div class="w-full max-w-[420px] max-h-[90vh] overflow-y-auto rounded-[10px] bg-white p-5" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 id="modalTitle" class="m-0 text-[1.2rem]">Add Event</h2>
+        <button id="closeModalBtn" class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-border bg-transparent text-lg leading-none hover:bg-bg-muted" aria-label="Close">&times;</button>
       </div>
       <form id="eventForm" novalidate>
         <input type="hidden" id="eventId">
 
-        <label class="field">
-          <span>Title <span class="required">*</span></span>
-          <input type="text" id="eventTitle" maxlength="100" placeholder="Event title">
-          <span class="error-msg" id="titleError"></span>
+        <label class="mb-3.5 flex flex-col gap-1 text-[0.85rem]">
+          <span>Title <span class="text-danger">*</span></span>
+          <input type="text" id="eventTitle" maxlength="100" placeholder="Event title" class="w-full rounded-md border border-border p-2 font-sans text-[0.95rem] focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-accent">
+          <span class="min-h-[1em] text-[0.78rem] text-danger" id="titleError"></span>
         </label>
 
-        <label class="field">
-          <span>Date <span class="required">*</span></span>
-          <input type="date" id="eventDate">
-          <span class="error-msg" id="dateError"></span>
+        <label class="mb-3.5 flex flex-col gap-1 text-[0.85rem]">
+          <span>Date <span class="text-danger">*</span></span>
+          <input type="date" id="eventDate" class="w-full rounded-md border border-border p-2 font-sans text-[0.95rem] focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-accent">
+          <span class="min-h-[1em] text-[0.78rem] text-danger" id="dateError"></span>
         </label>
 
-        <label class="field">
+        <label class="mb-3.5 flex flex-col gap-1 text-[0.85rem]">
           <span>Time</span>
-          <input type="time" id="eventTime">
+          <input type="time" id="eventTime" class="w-full rounded-md border border-border p-2 font-sans text-[0.95rem] focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-accent">
         </label>
 
-        <label class="field">
+        <label class="mb-3.5 flex flex-col gap-1 text-[0.85rem]">
           <span>Description</span>
-          <textarea id="eventDescription" rows="3" maxlength="500" placeholder="Optional details"></textarea>
+          <textarea id="eventDescription" rows="3" maxlength="500" placeholder="Optional details" class="w-full rounded-md border border-border p-2 font-sans text-[0.95rem] focus:outline focus:outline-2 focus:outline-offset-1 focus:outline-accent"></textarea>
         </label>
 
-        <div class="modal-actions">
-          <button type="button" id="deleteEventBtn" class="btn btn-danger" hidden>Delete</button>
-          <div class="modal-actions-right">
-            <button type="button" id="cancelBtn" class="btn">Cancel</button>
-            <button type="submit" class="btn btn-primary">Save</button>
+        <div class="mt-2 flex items-center justify-between gap-2">
+          <button type="button" id="deleteEventBtn" class="cursor-pointer rounded-md border border-danger bg-white px-3.5 py-2 text-[0.9rem] text-danger hover:bg-danger hover:text-white" hidden>Delete</button>
+          <div class="ml-auto flex gap-2">
+            <button type="button" id="cancelBtn" class="cursor-pointer rounded-md border border-border bg-white px-3.5 py-2 text-[0.9rem] hover:bg-bg-muted">Cancel</button>
+            <button type="submit" class="cursor-pointer rounded-md border border-accent bg-accent px-3.5 py-2 text-[0.9rem] text-white hover:brightness-95">Save</button>
           </div>
         </div>
       </form>
