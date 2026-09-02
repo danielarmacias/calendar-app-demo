@@ -4,16 +4,34 @@ A simple month-view calendar where you can add, edit, and delete events, right i
 
 ## Setup Instructions
 
-This app has no build tools or dependencies — it's just plain HTML, CSS, and JavaScript.
+This app has no build tools or dependencies — it's just plain HTML, CSS, and JavaScript
+(styled with [Tailwind CSS](https://tailwindcss.com) via its Play CDN, loaded straight from
+a `<script>` tag).
 
 1. Get the files onto your computer:
    ```bash
    git clone https://github.com/danielarmacias/calendar-app-demo.git
    cd calendar-app-demo
    ```
-   (Or just download/copy the `index.html`, `app.js`, and `styles.css` files.)
+   (Or just download/copy the `index.html` and `app.js` files.)
 2. Open `index.html` in your web browser — double-click the file, or drag it into a browser window.
 3. That's it! The app is running. Your events are saved in the browser's local storage, so they'll still be there next time you open the page (in the same browser).
+
+## Screenshots
+
+### Month view
+![Month view](screenshots/month-view-desktop.png)
+
+### Monthly themed backgrounds
+| May — Mother's Day | December — Christmas |
+| --- | --- |
+| ![Mayo](screenshots/theme-mayo-dia-madres.png) | ![Diciembre](screenshots/theme-diciembre-navidad.png) |
+
+### Add event modal
+![Add event modal](screenshots/add-event-modal.png)
+
+### Mobile responsive view
+![Mobile view](screenshots/month-view-mobile.png)
 
 ## Features
 
